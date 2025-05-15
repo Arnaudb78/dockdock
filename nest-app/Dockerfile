@@ -1,22 +1,31 @@
 FROM node:20-alpine
 
-# Set working directory
+# Dépendances système utiles (optionnel mais recommandé)
+RUN apk add --no-cache bash
+
+# Crée le dossier de travail
 WORKDIR /usr/src/app
 
-# Copy package.json and pnpm-lock.yaml
+# Copie les fichiers de lock/package pour installer les dépendances
 COPY package.json pnpm-lock.yaml ./
 
-# Install pnpm
+# Installe PNPM
 RUN npm install -g pnpm
 
-# Install dependencies
+# Installe les dépendances
 RUN pnpm install
 
-# Copy application source
+# Copie le reste des fichiers
 COPY . .
 
-# Expose application port
+# Assure que le dossier dist existe
+RUN mkdir -p dist
+
+# Build l'application (le code source est déjà présent maintenant)
+RUN pnpm run build
+
+# Expose le port
 EXPOSE 3000
 
-# Start application in development mode
-CMD ["sh", "-c", "pnpm run build && pnpm run start:prod"] 
+# Lancement de l'application en production
+CMD ["pnpm", "run", "start"]

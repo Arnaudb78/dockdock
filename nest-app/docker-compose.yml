@@ -1,5 +1,4 @@
 services:
-  # NestJS Application
   app:
     build:
       context: .
@@ -15,16 +14,14 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_NAME=dockdock
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - nest-app-node-modules:/usr/src/app/node_modules
     depends_on:
       - postgres
     restart: unless-stopped
     networks:
       - app-network
-    command: sh -c "rm -rf dist && pnpm run build && pnpm run start:dev"
+    command: pnpm run start:dev
 
-  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: postgres-db
@@ -41,7 +38,6 @@ services:
     networks:
       - app-network
 
-  # Adminer for Database Management
   adminer:
     image: adminer
     container_name: adminer
@@ -61,3 +57,4 @@ networks:
 
 volumes:
   postgres-data:
+  nest-app-node-modules:
